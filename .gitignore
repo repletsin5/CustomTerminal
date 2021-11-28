@@ -1,0 +1,10 @@
+bin/
+bin-obj/
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.dll
+*.lib
+*.obj
+*.pdb
+.vs/
