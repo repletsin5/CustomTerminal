@@ -151,7 +151,7 @@ int main(int argc, char** argv)
     //args = std::string&
     HINSTANCE proc;
     CIH::initciHandlerOnNewThread(output);
-    std::this_thread::sleep_for(16ms); // because help and first command of init commands will init as the first command a help will take priority.
+    std::this_thread::sleep_for(16ms); // because help and first command of init commands will init as the first command and help will take priority.
     initCommands();
     //cout << GetExePath();
     std::wstring path = GetExePath() + L"\\plugins";
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
             }
         }
         while (true) {
-            std::this_thread::sleep_for(16ms);
+            std::this_thread::sleep_for(100ms); // to lower cpu usage
         }
         FreeLibrary(proc);
     }

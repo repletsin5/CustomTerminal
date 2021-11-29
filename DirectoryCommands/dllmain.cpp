@@ -6,7 +6,7 @@ void launchExecutable(string file, string args) {
 
 }
 
-void launchExplorer(std::vector<std::string> args) {
+void launchExplorer(std::vector<string> args) {
 
 	string explorer = "C:\\Windows\\explorer.exe";
 	if (args[0] == ".") {
@@ -19,8 +19,19 @@ void launchExplorer(std::vector<std::string> args) {
 
 }
 
+void cdCommand(std::vector<string> args) {
+	/*
+	* TODO:
+	* not implemented
+	* Idea:
+	* parse ../ and ./ 
+	* recognise root specifier
+	*/
+}
+
 extern "C" int __declspec(dllexport) pluginMain() {
 
 	CIH::addCommand("explorer", {}, "opens explorer",launchExplorer);
+	//CIH::addCommand("cd", {}, "opens explorer",launchExplorer); //Not implemented yet
 	return 1;
 }

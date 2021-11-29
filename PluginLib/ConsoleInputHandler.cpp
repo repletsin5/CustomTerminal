@@ -31,7 +31,7 @@ void* CIH::initciHandler(void* output) {
 	cout <<outputString;
 	while (true)
 	{
-		std::this_thread::sleep_for(80ms);
+		std::this_thread::sleep_for(16ms);
 
 		CIH::currentCommand = "";
 
