@@ -1,5 +1,3 @@
-//BSD 3-Clause License
-//Copyright(c) 2021, the SingleHeaderLibs developers
 #pragma once
 #include <chrono>
 #include <iostream>
