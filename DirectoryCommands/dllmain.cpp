@@ -16,17 +16,6 @@ void launchExecutable(string file, string args) {
 
 }
 
-void launchExplorer(std::vector<string> args) {
-	string explorer = "C:\\Windows\\explorer.exe";
-	if (args[0] == ".") {
-		launchExecutable(explorer, **(CIH::curPath.get()));
-	}
-	else {
-		launchExecutable(explorer, args[0]);
-	}
-
-
-}
 
 void launchNoArgs(std::vector<string> args) {
 	std::vector<std::any> temp = jsonMap[CIH::currentCommand];
