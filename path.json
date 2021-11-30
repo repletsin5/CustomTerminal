@@ -1,0 +1,17 @@
+{
+	"explorer": {
+		"path":"C:\\Windows\\explorer.exe",
+		"args":true,
+		"description":"opens explorer"
+	},
+	"notepad": {
+		"path":"C:\\Windows\\notepad.exe",
+		"args":true,
+		"description":"opens notepad"
+	},
+	"npp": {
+		"path":"C:\\Program Files (x86)\\Notepad++\\notepad++.exe",
+		"args":true,
+		"description":"opens Notepad++"
+	}
+}
