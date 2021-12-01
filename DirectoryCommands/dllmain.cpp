@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <any>
-
+#include <filesystem>
 std::map<std::string, std::vector<std::any>> jsonMap;
 
 
@@ -51,6 +51,36 @@ void cdCommand(std::vector<string> args) {
 	*/
 }
 
+void lsCommand(std::vector<string> args) {
+	//probably the worst way to implement this 
+	if (( 0 < args[0].length()) || !(args[0] == "")) {
+		for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
+			for (auto& b : args) {
+				if (!a.is_directory() && b == "-f") {
+					cout << a.path().filename().string() << endl;
+				}
+				if (a.is_directory() && b == "-d") {
+					cout << a.path().filename().string() << endl;
+
+				}
+			}
+		}
+	}
+	else {
+		for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
+
+			if (a.is_directory()) {
+				cout << CIH::Color::Modifier(BG_GREEN) << a.path().filename().string() << CIH::Color::Modifier(RESET) << endl;
+			}
+			else {
+				cout << a.path().filename().string() << endl;
+			}
+		}
+	}
+
+
+}
+
 extern "C" int __declspec(dllexport) pluginMain() {
 	std::ifstream jsonFile;
 	jsonFile.open("path.json");
@@ -82,5 +112,6 @@ extern "C" int __declspec(dllexport) pluginMain() {
 		std::cout << std::any_cast<std::string>(hmm) << endl;
 	}
 	//CIH::addCommand("cd", {}, "opens explorer",launchExplorer); //Not implemented yet
+	CIH::addCommand("ls", {}, "list files and folders in current directory",lsCommand);
 	return 1;
 }
