@@ -8,22 +8,8 @@
 #include "UpdateChecker.h"
 #include <codecvt>
 
-inline std::wstring convert(const std::string& as)
-{
-    wchar_t* buf = new wchar_t[as.size() * 2 + 2];
-    std::swprintf(buf, L"%S", as.c_str());
-    std::wstring rval = buf;
-    delete[] buf;
-    return rval;
-}
-std::string utf8_encode(const std::wstring& wstr)
-{
-    if (wstr.empty()) return std::string();
-    int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-    std::string strTo(size_needed, 0);
-    WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-    return strTo;
-}
+
+
 
 std::wstring GetExeFileName()
 {
@@ -109,14 +95,15 @@ int main(int argc, char** argv)
             CloseHandle(pi.hProcess);
         exit(1);
     }
+    std::wstring name;
     WCHAR username[UNLEN + 1];
     DWORD username_len = UNLEN + 1;
     GetUserName(username, &username_len);
     std::wstring name = L"C:\\Users\\" + wstring(username);
-    string dir = utf8_encode(name);
+    string dir = CIH::utf8_encode(name);
     CIH::curPath = make_shared<std::string*>(&dir);
 
-    string output = CIH::Color::Modifier(FG_GREEN) + utf8_encode(name) + CIH::Color::Modifier(FG_RED) + ">>" + CIH::Color::Modifier(RESET);
+    string output = CIH::Color::Modifier(FG_GREEN) + CIH::utf8_encode(name) + CIH::Color::Modifier(FG_RED) + ">>" + CIH::Color::Modifier(RESET);
     //you can modify the output string while running but currently only works with initciHandlerOnNewThread
    
     

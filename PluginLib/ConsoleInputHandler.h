@@ -17,10 +17,11 @@ enum Code {
 	FG_BLUE = 34,
 	FG_DEFAULT = 39,
 	BG_RED = 41,
-	BG_GREEN = 42,
+	BG_GREEN = 42, 
 	BG_BLUE = 44,
 	BG_DEFAULT = 49
 };
+
 
 TERMINAL_API extern struct commandStruct
 {
@@ -34,58 +35,60 @@ namespace CIH::Color {
 	class Modifier {
 		Code code;
 	public:
-		Modifier(Code pCode) : code(pCode) { color = string("\33[") + std::to_string(pCode) + string("m"); }
-		std::string color;
+		Modifier(Code pCode) : code(pCode) { colour = string("\33[") + std::to_string(pCode) + string("m"); }
+		std::string colour;
 		friend std::ostream&
 			 operator<<(std::ostream& os, const Modifier& mod) {
-			return os << mod.color;
+			return os << mod.colour;
 		}
 		friend std::string  operator+(std::string tmp , const Modifier& mod) {
 			
-			return tmp + mod.color;
+			return tmp + mod.colour;
 		}
 		friend std::string  operator+(const char* tmp, const Modifier& mod) {
 
-			return  string(tmp) + mod.color;
+			return  string(tmp) + mod.colour;
 		}
 		friend std::string  operator+(char* tmp, const Modifier& mod) {
 
-			return string(tmp) + mod.color;
+			return string(tmp) + mod.colour;
 		}
 		friend std::string  operator+(char tmp, const Modifier& mod) {
 			char temp[2];
 			temp[0] = tmp;
 			temp[1] = '\0';
 
-			return string(temp) + mod.color;
+			return string(temp) + mod.colour;
 		}
 		friend std::string  operator+(const Modifier mod, std::string tmp) {
 
-			return mod.color + tmp;
+			return mod.colour + tmp;
 		}
 		friend std::string  operator+(const Modifier& mod, const char* tmp) {
 
-			return mod.color + string(tmp);
+			return mod.colour + string(tmp);
 		}
 		friend std::string  operator+(const Modifier& mod, char* tmp) {
 
-			return mod.color + string(tmp);
+			return mod.colour + string(tmp);
 		}
 		friend std::string  operator+(const Modifier& mod, char tmp) {
 			char temp[2];
 			temp[0] = tmp;
 			temp[1] = '\0';
 
-			return mod.color + string(temp);
+			return mod.colour + string(temp);
 		}
 	};
 }
 
 namespace CIH
-{
+{	
 	TERMINAL_API extern void initciHandler(const string& output);
 	TERMINAL_API extern void* initciHandler(void* output);
 	TERMINAL_API extern int initciHandlerOnNewThread(const string& output);
+	TERMINAL_API extern std::wstring convert(const std::string& as);
+	TERMINAL_API extern std::string utf8_encode(const std::wstring& wstr);
 	TERMINAL_API extern std::shared_ptr < std::vector<commandStruct>> commands;
 	TERMINAL_API void addCommand(string cmd, vector<string> aliases, string description, void (*callback)(vector<string>));
 	TERMINAL_API extern std::shared_ptr<std::string*> outputStringPtr;

@@ -1,7 +1,12 @@
+
+#include <Windows.h>
 #include <memory>
 #include "ConsoleInputHandler.h"
 #include <ostream>
 #include <iostream>
+#include <codecvt>
+#include <Lmcons.h>
+
 
 
 std::shared_ptr < std::vector<commandStruct>> CIH::commands = make_shared<std::vector<commandStruct>>(0);
@@ -21,6 +26,28 @@ int CIH::initciHandlerOnNewThread(const string& output) {
 	}
 	return ret;
 }
+
+
+//code below from stackoverflow
+inline std::wstring CIH::convert(const std::string& as)
+{
+	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
+	std::swprintf(buf, L"%S", as.c_str());
+	std::wstring rval = buf;
+	delete[] buf;
+	return rval;
+}
+//code below from stackoverflow
+std::string CIH::utf8_encode(const std::wstring& wstr)
+{
+	if (wstr.empty()) return std::string();
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+	std::string strTo(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+	return strTo;
+}
+
+
 void* CIH::initciHandler(void* output) {
 
 	CIH::commands.get()->clear();
