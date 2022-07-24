@@ -94,16 +94,21 @@ int SubdirCount(const TCHAR* parent_path) {
 void lsCommand(std::vector<string> args) {
 	//probably a bad way to implement this 
 
-	auto fileSize = std::distance(std::filesystem::directory_iterator(**CIH::curPath.get()), std::filesystem::directory_iterator{});
-	
+	auto dirAndFileCount = std::distance(std::filesystem::directory_iterator(**CIH::curPath.get()), std::filesystem::directory_iterator{});
+	std::map<const char*, bool>::iterator it;
+	std::map<const char*, bool> allArgsUsed = { { "-f",false},{"-d",false},{"-l",false} };
 	if ((0 < args[0].length()) || !(args[0] == "")) {
 		bool printed = false;
-		std::map<const char*, bool>::iterator it;
-		std::map<const char*, bool> allArgsUsed = { { "-f",false},{"-d",false},{"-l",false} };
-		for (auto& b : args) {
+		for (auto b : args) {
+			cout << b << endl;
+			cout <<"val = " << allArgsUsed[b.c_str()] << endl;
 			it = allArgsUsed.find(b.c_str());
 			if (it != allArgsUsed.end())
 				allArgsUsed[b.c_str()] = true;
+
+			cout << "val = " << allArgsUsed[b.c_str()] << endl;
+		
+
 			for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
 
 
@@ -112,7 +117,7 @@ void lsCommand(std::vector<string> args) {
 					DWORD attributes = GetFileAttributes(a.path().c_str());
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
-						cout << fileSize << endl;
+						cout << dirAndFileCount << endl;
 					}
 					if (a.is_directory()) {
 
@@ -128,11 +133,11 @@ void lsCommand(std::vector<string> args) {
 							cout << a.path().filename().string() << endl;
 					}
 				}
-				else if (!a.is_directory() == true && allArgsUsed[0] == true && allArgsUsed["-d"] == false) {
+				else if (!a.is_directory() == true && allArgsUsed["-f"] == true && allArgsUsed["-d"] == false) {
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
-
-						cout << (fileSize - SubdirCount(CIH::convert(**CIH::curPath.get()).c_str())) << endl;
+						auto fileCount = dirAndFileCount - SubdirCount(CIH::convert(**CIH::curPath.get()).c_str());
+						cout << fileCount << endl;
 					}
 					if (attributes & FILE_ATTRIBUTE_HIDDEN)
 						cout << a.path().filename().string() << " [Hidden]" << endl;
@@ -152,7 +157,7 @@ void lsCommand(std::vector<string> args) {
 				}
 				else if (allArgsUsed["-l"] == true && printed == false) {
 					printed = true;
-					cout << fileSize << endl;
+					cout << dirAndFileCount << endl;
 				}
 
 
@@ -211,7 +216,7 @@ extern "C" int __declspec(dllexport) pluginMain() {
 	for (auto& hmm:  temp) {
 		std::cout << std::any_cast<std::string>(hmm) << endl;
 	}
-	//CIH::addCommand("cd", {}, "opens explorer",launchExplorer); //Not implemented yet
+	CIH::addCommand("cd", {}, "changes current directory",cdCommand); //Not implemented yet
 	CIH::addCommand("ls", {}, "list files and folders in current directory",lsCommand);
 	return 1;
 }

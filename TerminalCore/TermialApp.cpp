@@ -7,6 +7,7 @@
 #include <Lmcons.h>
 #include "UpdateChecker.h"
 #include <codecvt>
+#include <locale.h>
 
 
 
@@ -35,6 +36,8 @@ std::string getFileExt(const std::string& s) {
 
     return("");
 }
+
+
 
 bool EnableVTMode()
 {
@@ -74,6 +77,7 @@ int main(int argc, char** argv)
 
     version curVer("0", "0", "0-alpha");
     cout << "Termial version: " << curVer  << endl;
+    
     if (!isUpToDate(curVer)) {
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -96,10 +100,36 @@ int main(int argc, char** argv)
         exit(1);
     }
     std::wstring name;
+
+
+
     WCHAR username[UNLEN + 1];
     DWORD username_len = UNLEN + 1;
     GetUserName(username, &username_len);
-    std::wstring name = L"C:\\Users\\" + wstring(username);
+
+
+        
+
+    if (argc > 1) {
+        DWORD attributes = GetFileAttributes(CIH::convert(argv[1]).c_str());
+        if (attributes == INVALID_FILE_ATTRIBUTES) {
+            cout << "Directory not valid\n";
+            name = L"C:\\Users\\" + wstring(username);
+        }
+
+        if (attributes & FILE_ATTRIBUTE_DIRECTORY) {
+            name = CIH::convert(argv[1]).c_str();
+        }
+        else {
+            cout << "Directory not valid\n";
+            name = L"C:\\Users\\" + wstring(username);
+        }
+    }
+    else
+        name = L"C:\\Users\\" + wstring(username);
+
+
+
     string dir = CIH::utf8_encode(name);
     CIH::curPath = make_shared<std::string*>(&dir);
 

@@ -47,6 +47,51 @@ std::string CIH::utf8_encode(const std::wstring& wstr)
 	return strTo;
 }
 
+bool CIH::setWindowAlpha(BYTE aplha) {
+	return SetLayeredWindowAttributes(
+		GetConsoleHwnd(),
+		NULL,
+		aplha,
+		LWA_ALPHA
+	);
+}
+HWND CIH::GetConsoleHwnd()
+{
+#define MY_BUFSIZE 1024 // Buffer size for console window titles.
+	HWND hwndFound;         // This is what is returned to the caller.
+	wchar_t pszNewWindowTitle[MY_BUFSIZE]; // Contains fabricated
+										// WindowTitle.
+	wchar_t pszOldWindowTitle[MY_BUFSIZE]; // Contains original
+										// WindowTitle.
+
+	// Fetch current window title.
+
+	GetConsoleTitle((LPWSTR)pszOldWindowTitle, MY_BUFSIZE);
+
+	// Format a "unique" NewWindowTitle.
+
+	wsprintf((LPWSTR)pszOldWindowTitle, L"%d/%d",
+		GetTickCount(),
+		GetCurrentProcessId());
+
+	// Change current window title.
+
+	SetConsoleTitle(pszNewWindowTitle);
+
+	// Ensure window title has been updated.
+
+	Sleep(40);
+
+	// Look for NewWindowTitle.
+
+	hwndFound = FindWindow(NULL, pszNewWindowTitle);
+
+	// Restore original window title.
+
+	SetConsoleTitle(pszOldWindowTitle);
+
+	return(hwndFound);
+}
 
 void* CIH::initciHandler(void* output) {
 
@@ -54,7 +99,7 @@ void* CIH::initciHandler(void* output) {
 	CIH::addCommand("help", {}, "", helpCommand);
 	CIH::outputStringPtr = make_shared<std::string*>(static_cast<std::string*>(output));
 	string outputString = *(static_cast<string*>(static_cast<std::string*>(output)));
-
+	setWindowAlpha(122);
 	cout <<outputString;
 	while (true)
 	{
@@ -119,6 +164,7 @@ void CIH::initciHandler(const string& output) {
 	CIH::outputStringPtr = make_shared<std::string*>(const_cast<std::string*> (&output));
 	CIH::commands.get()->clear();
 	CIH::addCommand("help", { "" }, "", helpCommand);
+	setWindowAlpha(122);
 	while (true)
 	{
 		CIH::currentCommand = "";

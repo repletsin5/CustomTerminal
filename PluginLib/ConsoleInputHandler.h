@@ -87,6 +87,7 @@ namespace CIH
 	TERMINAL_API extern void initciHandler(const string& output);
 	TERMINAL_API extern void* initciHandler(void* output);
 	TERMINAL_API extern int initciHandlerOnNewThread(const string& output);
+	TERMINAL_API extern bool setWindowAlpha(BYTE aplha);
 	TERMINAL_API extern std::wstring convert(const std::string& as);
 	TERMINAL_API extern std::string utf8_encode(const std::wstring& wstr);
 	TERMINAL_API extern std::shared_ptr < std::vector<commandStruct>> commands;
@@ -95,6 +96,7 @@ namespace CIH
 	TERMINAL_API extern std::shared_ptr<std::string*> curPath;
 	TERMINAL_API extern std::string inputText;
 	TERMINAL_API extern std::string currentCommand;
+	TERMINAL_API extern HWND GetConsoleHwnd();
 
 	extern bool replace(std::string& str, const std::string& from, const std::string& to);
 	extern void handleCommands(string command, vector<string>args, const std::vector<commandStruct>& commands);
