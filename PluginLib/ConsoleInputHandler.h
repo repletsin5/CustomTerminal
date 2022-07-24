@@ -84,16 +84,16 @@ namespace CIH::Color {
 
 namespace CIH
 {	
-	TERMINAL_API extern void initciHandler(const string& output);
-	TERMINAL_API extern void* initciHandler(void* output);
-	TERMINAL_API extern int initciHandlerOnNewThread(const string& output);
+	TERMINAL_API extern void* initciHandler(void*);
+	TERMINAL_API extern int initciHandlerOnNewThread();
 	TERMINAL_API extern bool setWindowAlpha(BYTE aplha);
 	TERMINAL_API extern std::wstring convert(const std::string& as);
 	TERMINAL_API extern std::string utf8_encode(const std::wstring& wstr);
 	TERMINAL_API extern std::shared_ptr < std::vector<commandStruct>> commands;
 	TERMINAL_API void addCommand(string cmd, vector<string> aliases, string description, void (*callback)(vector<string>));
-	TERMINAL_API extern std::shared_ptr<std::string*> outputStringPtr;
-	TERMINAL_API extern std::shared_ptr<std::string*> curPath;
+	TERMINAL_API extern std::shared_ptr<std::string> outputStringPtr;
+	TERMINAL_API extern std::shared_ptr<std::string> curPath;
+	TERMINAL_API extern std::shared_ptr<std::string> suffex;
 	TERMINAL_API extern std::string inputText;
 	TERMINAL_API extern std::string currentCommand;
 	TERMINAL_API extern HWND GetConsoleHwnd();

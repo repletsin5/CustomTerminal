@@ -131,16 +131,16 @@ int main(int argc, char** argv)
 
 
     string dir = CIH::utf8_encode(name);
-    CIH::curPath = make_shared<std::string*>(&dir);
+    CIH::curPath = make_shared<string>(dir);
 
-    string output = CIH::Color::Modifier(FG_GREEN) + CIH::utf8_encode(name) + CIH::Color::Modifier(FG_RED) + ">>" + CIH::Color::Modifier(RESET);
+    CIH::suffex = make_shared<string>(CIH::Color::Modifier(FG_RED) + ">>" + CIH::Color::Modifier(RESET));
     //you can modify the output string while running but currently only works with initciHandlerOnNewThread
    
     
  
     //args = std::string&
     HINSTANCE proc;
-    CIH::initciHandlerOnNewThread(output);
+    CIH::initciHandlerOnNewThread();
     std::this_thread::sleep_for(16ms); // because help and first command of init commands will init as the first command and help will take priority.
     initCommands();
     //cout << GetExePath();
@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 
     }
     catch (...) {
-        cout << "unkown Exception\n";
+        cout << "unknown Exception\n";
     }
 }
 

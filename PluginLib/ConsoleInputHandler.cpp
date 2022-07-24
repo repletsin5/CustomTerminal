@@ -10,16 +10,17 @@
 
 
 std::shared_ptr < std::vector<commandStruct>> CIH::commands = make_shared<std::vector<commandStruct>>(0);
-std::shared_ptr<std::string*> CIH::outputStringPtr = make_shared<std::string*>();
-std::shared_ptr<std::string*> CIH::curPath = make_shared<std::string*>();
+std::shared_ptr<std::string> CIH::outputStringPtr = make_shared<std::string>();
+std::shared_ptr<std::string> CIH::curPath = make_shared<std::string>();
+std::shared_ptr<std::string> CIH::suffex = make_shared<std::string>();
 std::string CIH::inputText;
 std::string CIH::currentCommand;
 
-int CIH::initciHandlerOnNewThread(const string& output) {
+int CIH::initciHandlerOnNewThread() {
 
 	pthread_t thread;
 	int ret;
-	ret = pthread_create(&thread, NULL, initciHandler, (void*)&output);
+	ret = pthread_create(&thread, NULL, initciHandler,(void*)0);
 	if (ret != 0) {
 		printf("pthread_create() failed\n");
 		exit(0);
@@ -93,14 +94,12 @@ HWND CIH::GetConsoleHwnd()
 	return(hwndFound);
 }
 
-void* CIH::initciHandler(void* output) {
+void* CIH::initciHandler(void*) {
 
 	CIH::commands.get()->clear();
 	CIH::addCommand("help", {}, "", helpCommand);
-	CIH::outputStringPtr = make_shared<std::string*>(static_cast<std::string*>(output));
-	string outputString = *(static_cast<string*>(static_cast<std::string*>(output)));
-	setWindowAlpha(122);
-	cout <<outputString;
+	setWindowAlpha(255);
+	cout << CIH::Color::Modifier(FG_GREEN) + *CIH::curPath.get() + *CIH::suffex.get();
 	while (true)
 	{
 		std::this_thread::sleep_for(16ms);
@@ -154,66 +153,12 @@ void* CIH::initciHandler(void* output) {
 		}
 		argsArray.push_back(temp);
 		handleCommands(CIH::currentCommand, argsArray, *CIH::commands.get());
-		cout <<  outputString ;
+		cout << CIH::Color::Modifier(FG_GREEN) + *CIH::curPath.get() + *CIH::suffex.get();
 	}
 }
 
 
 
-void CIH::initciHandler(const string& output) {
-	CIH::outputStringPtr = make_shared<std::string*>(const_cast<std::string*> (&output));
-	CIH::commands.get()->clear();
-	CIH::addCommand("help", { "" }, "", helpCommand);
-	setWindowAlpha(122);
-	while (true)
-	{
-		CIH::currentCommand = "";
-
-		getline(cin, CIH::inputText);
-		for (auto c : CIH::inputText) {
-			if (c != ' ')
-				CIH::currentCommand += c;
-			else
-				if (CIH::currentCommand.size() > 0)
-					break;
-		}
-
-		string temp;
-		temp = CIH::currentCommand + " ";
-		CIH::inputText.erase(CIH::inputText.begin(), CIH::inputText.begin() + (temp.size() - 1));
-		temp = "";
-		int toRemove = 0;
-		for (auto c : CIH::currentCommand) {
-			if (c == ' ')
-				toRemove++;
-			else
-				break;
-		}
-		if (toRemove > 0) {
-			CIH::currentCommand.erase(CIH::inputText.begin(), CIH::inputText.begin() + (toRemove - 1));
-		}
-		auto args = CIH::inputText;
-		vector<string>argsArray;
-		temp = "";
-		for (size_t i = 0; i < args.length(); i++) {
-			char c = args[i];
-			if (c == ' ') {
-				argsArray.push_back(temp);
-				temp = "";
-			}
-			else if (c == '\"') {
-				i++;
-				while (args[i] != '\"') { temp += args[i]; i++; }
-			}
-			else {
-				temp += c;
-			}
-		}
-		handleCommands(CIH::currentCommand, argsArray, *CIH::commands.get());
-
-	}
-
-}
 
 void CIH::handleCommands(string command, vector<string>args, const std::vector<commandStruct>& commands) {
 	for (auto c : commands) {

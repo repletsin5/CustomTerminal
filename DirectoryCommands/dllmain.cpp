@@ -8,7 +8,7 @@
 #include <vector>
 #include <any>
 #include <filesystem>
-
+string temp1;
 std::map<std::string, std::vector<std::any>> jsonMap;
 
 
@@ -28,6 +28,7 @@ void launchWithArgs(std::vector<string> args) {
 	std::vector<std::any> temp = jsonMap[CIH::currentCommand];
 	if (args[0] == ".") {
 		launchExecutable(std::any_cast<std::string>(temp[0]), **(CIH::curPath.get()));
+		launchExecutable(std::any_cast<std::string>(temp[0]), *(CIH::curPath.get()));
 	}
 	else {
 		launchExecutable(std::any_cast<std::string>(temp[0]), args[0]);
@@ -44,6 +45,11 @@ void initJSONcommands(const char* cmd,bool args,const char* desc) {
 	}
 }
 
+inline bool ends_with(std::string const& value, std::string const& ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
 void cdCommand(std::vector<string> args) {
 	/*
 	* TODO:
@@ -52,6 +58,65 @@ void cdCommand(std::vector<string> args) {
 	* parse ../ and ./ 
 	* recognise root specifier
 	*/
+	filesystem::path temp;
+	if ((0 < args[0].length()) || !(args[0] == "")) {
+
+		
+		temp.assign(args[0]);
+		if (!temp.has_root_path()) {
+
+			if (args[0]._Starts_with("../")|| args[0]._Starts_with("..\\") || args[0]._Starts_with("..")) {
+				if (std::filesystem::is_directory(*CIH::curPath.get() + "\\" + args[0])) {
+					
+					//**CIH::curPath.get() = **CIH::curPath.get() + "\\" + args[0];
+					temp1 = filesystem::absolute(*CIH::curPath.get() + "\\" + args[0]).lexically_normal().string();
+					if (ends_with(temp1, "\\")) {
+						temp1 = temp1.substr(0, temp1.size() - 1);
+					}
+					CIH::curPath = make_shared<std::string>(temp1);
+				
+				}
+				else {
+					cout << "Path does not exsist\n";
+				}
+			}
+			else if (args[0]._Starts_with("./") || args[0]._Starts_with(".\\")) {
+				temp1 =args[0];
+				temp1 = temp1.erase(0, 1);
+				temp1 = *CIH::curPath.get() + temp1;
+				if (std::filesystem::is_directory(temp1)){
+					CIH::curPath = make_shared<std::string>(filesystem::absolute(temp1).lexically_normal().string());
+				}
+				else {
+					cout << "Path does not exsist\n";
+				}
+			}
+			else {
+				if (std::filesystem::is_directory(*CIH::curPath.get() + "\\" + args[0])) {
+					CIH::curPath = make_shared<std::string>(filesystem::absolute(*CIH::curPath.get() + "\\" + args[0]).lexically_normal().string());
+				}
+				else {
+					cout << "Path does not exsist\n";
+				}
+			}
+		}
+		else {
+			if (std::filesystem::is_directory(args[0])) {
+
+				//**CIH::curPath.get() = **CIH::curPath.get() + "\\" + args[0];
+				auto temp2 = filesystem::absolute(args[0]).lexically_normal().string();
+				if (ends_with(temp2, "\\")) {
+					temp2 = temp2.substr(0, temp2.size() - 1);
+				}
+				CIH::curPath = make_shared<std::string>(temp2);
+
+			}
+			else {
+				cout << "Path does not exsist\n";
+			}
+		}
+	}
+
 }
 
 
@@ -95,6 +160,7 @@ void lsCommand(std::vector<string> args) {
 	//probably a bad way to implement this 
 
 	auto dirAndFileCount = std::distance(std::filesystem::directory_iterator(**CIH::curPath.get()), std::filesystem::directory_iterator{});
+	auto dirAndFileCount = std::distance(std::filesystem::directory_iterator(*CIH::curPath.get()), std::filesystem::directory_iterator{});
 	std::map<const char*, bool>::iterator it;
 	std::map<const char*, bool> allArgsUsed = { { "-f",false},{"-d",false},{"-l",false} };
 	if ((0 < args[0].length()) || !(args[0] == "")) {
@@ -110,6 +176,7 @@ void lsCommand(std::vector<string> args) {
 		
 
 			for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
+			for (auto& a : std::filesystem::directory_iterator(*CIH::curPath.get())) {
 
 
 				DWORD attributes = GetFileAttributes(a.path().c_str());
@@ -137,6 +204,7 @@ void lsCommand(std::vector<string> args) {
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
 						auto fileCount = dirAndFileCount - SubdirCount(CIH::convert(**CIH::curPath.get()).c_str());
+						auto fileCount = dirAndFileCount - SubdirCount(CIH::convert(*CIH::curPath.get()).c_str());
 						cout << fileCount << endl;
 					}
 					if (attributes & FILE_ATTRIBUTE_HIDDEN)
@@ -148,6 +216,7 @@ void lsCommand(std::vector<string> args) {
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
 						cout << SubdirCount(CIH::convert(**CIH::curPath.get()).c_str()) << endl;
+						cout << SubdirCount(CIH::convert(*CIH::curPath.get()).c_str()) << endl;
 					}
 					if (attributes & FILE_ATTRIBUTE_HIDDEN)
 						cout << a.path().filename().string() << " [Hidden]" << endl;
@@ -167,6 +236,7 @@ void lsCommand(std::vector<string> args) {
 	}
 	else {
 		for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
+		for (auto& a : std::filesystem::directory_iterator(*CIH::curPath.get())) {
 			DWORD attributes = GetFileAttributes(a.path().c_str());
 			if (a.is_directory()) {
 				if (attributes & FILE_ATTRIBUTE_HIDDEN)
