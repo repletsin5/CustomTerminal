@@ -200,7 +200,6 @@ void lsCommand(std::vector<string> args) {
 				else if (!a.is_directory() == true && allArgsUsed["-f"] == true && allArgsUsed["-d"] == false) {
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
-						auto fileCount = dirAndFileCount - SubdirCount(CIH::convert(**CIH::curPath.get()).c_str());
 						auto fileCount = dirAndFileCount - SubdirCount(CIH::convert(*CIH::curPath.get()).c_str());
 						cout << fileCount << endl;
 					}
