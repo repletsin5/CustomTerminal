@@ -27,7 +27,6 @@ void launchNoArgs(std::vector<string> args) {
 void launchWithArgs(std::vector<string> args) {
 	std::vector<std::any> temp = jsonMap[CIH::currentCommand];
 	if (args[0] == ".") {
-		launchExecutable(std::any_cast<std::string>(temp[0]), **(CIH::curPath.get()));
 		launchExecutable(std::any_cast<std::string>(temp[0]), *(CIH::curPath.get()));
 	}
 	else {
@@ -159,7 +158,6 @@ int SubdirCount(const TCHAR* parent_path) {
 void lsCommand(std::vector<string> args) {
 	//probably a bad way to implement this 
 
-	auto dirAndFileCount = std::distance(std::filesystem::directory_iterator(**CIH::curPath.get()), std::filesystem::directory_iterator{});
 	auto dirAndFileCount = std::distance(std::filesystem::directory_iterator(*CIH::curPath.get()), std::filesystem::directory_iterator{});
 	std::map<const char*, bool>::iterator it;
 	std::map<const char*, bool> allArgsUsed = { { "-f",false},{"-d",false},{"-l",false} };
@@ -175,7 +173,6 @@ void lsCommand(std::vector<string> args) {
 			cout << "val = " << allArgsUsed[b.c_str()] << endl;
 		
 
-			for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
 			for (auto& a : std::filesystem::directory_iterator(*CIH::curPath.get())) {
 
 
@@ -215,7 +212,6 @@ void lsCommand(std::vector<string> args) {
 				else if (a.is_directory() == true && allArgsUsed["-d"] == true && allArgsUsed["-f"] == false) {
 					if (allArgsUsed["-l"] == true && printed == false) {
 						printed = true;
-						cout << SubdirCount(CIH::convert(**CIH::curPath.get()).c_str()) << endl;
 						cout << SubdirCount(CIH::convert(*CIH::curPath.get()).c_str()) << endl;
 					}
 					if (attributes & FILE_ATTRIBUTE_HIDDEN)
@@ -235,7 +231,6 @@ void lsCommand(std::vector<string> args) {
 		}
 	}
 	else {
-		for (auto& a : std::filesystem::directory_iterator(**CIH::curPath.get())) {
 		for (auto& a : std::filesystem::directory_iterator(*CIH::curPath.get())) {
 			DWORD attributes = GetFileAttributes(a.path().c_str());
 			if (a.is_directory()) {
